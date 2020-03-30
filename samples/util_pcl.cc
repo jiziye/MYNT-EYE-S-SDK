@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "util_pcl.h"
+#include <pcl/io/pcd_io.h>
 
 // #include <pcl/common/common_headers.h>
 
@@ -55,6 +56,14 @@ PCViewer::~PCViewer() {
 void PCViewer::Update(const cv::Mat &xyz) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr pc(new pcl::PointCloud<pcl::PointXYZ>);
   ConvertMatToPointCloud(xyz, pc);
+  pc->points.resize(pc->width * pc->height);
+  
+  static int count = 1;
+  std::stringstream ss;
+  ss << "pointcloud - "<< (count++) << ".pcd";
+  std::string filename = ss.str();
+  pcl::io::savePCDFileASCII(filename,*pc);
+  std::cout << "pcd file (" << filename << ") sucessfully saved. " << std::endl;
   Update(pc);
 }
 
